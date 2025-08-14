@@ -6,55 +6,80 @@
   <title>Secure Express Onboarding Results</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f9f9f9; }
-    h2 { text-align: center; color: #333; }
-    .results { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    .result-item { margin-bottom: 10px; }
-    button { padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; }
-    button:hover { background-color: #0056b3; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background-color: #f9f9f9;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .results {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
-  <h2>Training Complete</h2>
-  <div class="results" id="resultsContainer">
-    <!-- Results will be displayed here -->
-  </div>
+  <h2>Training Results</h2>
+  <div class="results" id="resultsDisplay"></div>
   <button onclick="sendResults()">Send Results</button>
 
   <script>
     const driverInfo = JSON.parse(localStorage.getItem('driverInfo'));
     const testResults = JSON.parse(localStorage.getItem('testResults'));
 
-    const container = document.getElementById('resultsContainer');
-    let allPassed = true;
-    let resultSummary = '';
-
-    for (let i = 1; i <= 8; i++) {
-      const result = testResults && testResults['test' + i];
-      const passed = result && result.passed;
-      const score = result ? result.score : 0;
-      const status = passed ? '✅ Passed' : '❌ Failed';
-      if (!passed) allPassed = false;
-      resultSummary += `Test ${i}: ${status} (Score: ${score})\n`;
-      const div = document.createElement('div');
-      div.className = 'result-item';
-      div.textContent = `Test ${i}: ${status} (Score: ${score})`;
-      container.appendChild(div);
-    }
-
-    function sendResults() {
-      if (!allPassed) {
-        alert("You must pass all tests before sending results.");
+    function displayResults() {
+      const container = document.getElementById('resultsDisplay');
+      if (!driverInfo || !testResults) {
+        container.innerHTML = "<p>Missing driver info or test results.</p>";
         return;
       }
 
-      fetch('https://your-backend-endpoint/send-email', {
+      let html = `<p><strong>Name:</strong> ${driverInfo.name} ${driverInfo.surname}</p>`;
+      html += "<ul>";
+      let allPassed = true;
+      for (const [test, result] of Object.entries(testResults)) {
+        html += `<li>${test}: ${result.passed ? "Passed" : "Failed"} (${result.score}%)</li>`;
+        if (!result.passed) allPassed = false;
+      }
+      html += "</ul>";
+      html += `<p><strong>Overall Status:</strong> ${allPassed ? "Passed" : "Failed"}</p>`;
+      container.innerHTML = html;
+    }
+
+    function sendResults() {
+      if (!driverInfo || !testResults) {
+        alert("Missing driver info or test results.");
+        return;
+      }
+
+      fetch('https://secure-express-backend.vercel.app/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: driverInfo.name,
           email: driverInfo.email,
-          summary: resultSummary
+          results: testResults
         })
       })
       .then(response => {
@@ -65,10 +90,12 @@
         }
       })
       .catch(error => {
-        console.error("Error sending email:", error);
-        alert("Error sending email.");
+        console.error("Error sending results:", error);
+        alert("Error sending results.");
       });
     }
+
+    displayResults();
   </script>
 </body>
 </html>
