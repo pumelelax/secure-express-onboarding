@@ -1,148 +1,60 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Test 2</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f9f9f9; }
-        .question { display: none; }
-        .question.active { display: block; }
-        .feedback { margin-top: 10px; color: green; }
-        .navigation { margin-top: 20px; }
-        button { padding: 10px 20px; margin: 5px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Test 2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f9f9f9; }
+    .question { margin-bottom: 20px; }
+    .hidden { display: none; }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-    <h2>Test 2</h2>
-    <form id="quizForm">
+  <h2>Test 2</h2>
+  <div id="quiz"></div>
+  <button id="nextBtn" class="hidden">Next Test</button>
+  <script>
+    const questions = [{'question': 'What is the purpose of commentary driving?', 'options': ['To narrate your actions', 'To entertain passengers', 'To confuse other drivers'], 'answer': 0}, {'question': 'When should you check your mirrors?', 'options': ['Every 5 seconds', 'Only when turning', 'Never'], 'answer': 0}, {'question': 'What does SIPDE stand for?', 'options': ['Scan, Identify, Predict, Decide, Execute', 'Stop, Inspect, Proceed, Drive, Exit', 'None of the above'], 'answer': 0}, {'question': 'What tone should you use with clients?', 'options': ['Friendly and professional', 'Sarcastic', 'Indifferent'], 'answer': 0}, {'question': 'What is the first step in vehicle inspection?', 'options': ['Visual check', 'Start engine', 'Drive off'], 'answer': 0}];
+    let current = 0;
+    let correctAnswers = 0;
+    const quizDiv = document.getElementById('quiz');
+    const nextBtn = document.getElementById('nextBtn');
 
-        <div class="question" id="q0">
-            <p><strong>Question 1:</strong> What is the purpose of commentary driving?</p>
-
-            <label><input type="radio" name="q0" value="0"> To entertain passengers</label><br>
-
-            <label><input type="radio" name="q0" value="1"> To narrate surroundings</label><br>
-
-            <label><input type="radio" name="q0" value="2"> To improve awareness and safety</label><br>
-
-            <label><input type="radio" name="q0" value="3"> To follow GPS instructions</label><br>
-
-            <div class="feedback" id="f0"></div>
-            <div class="navigation">
-                <button type="button" onclick="checkAnswer(0, 2)">Submit</button>
-            </div>
-        </div>
-
-        <div class="question" id="q1">
-            <p><strong>Question 2:</strong> Which of the following is a key aspect of tone of service?</p>
-
-            <label><input type="radio" name="q1" value="0"> Volume</label><br>
-
-            <label><input type="radio" name="q1" value="1"> Accent</label><br>
-
-            <label><input type="radio" name="q1" value="2"> Energy and friendliness</label><br>
-
-            <label><input type="radio" name="q1" value="3"> Speed of speech</label><br>
-
-            <div class="feedback" id="f1"></div>
-            <div class="navigation">
-                <button type="button" onclick="checkAnswer(1, 2)">Submit</button>
-            </div>
-        </div>
-
-        <div class="question" id="q2">
-            <p><strong>Question 3:</strong> What does the 'People First' principle emphasize?</p>
-
-            <label><input type="radio" name="q2" value="0"> Efficiency</label><br>
-
-            <label><input type="radio" name="q2" value="1"> Customer priority</label><br>
-
-            <label><input type="radio" name="q2" value="2"> Speed</label><br>
-
-            <label><input type="radio" name="q2" value="3"> Profit</label><br>
-
-            <div class="feedback" id="f2"></div>
-            <div class="navigation">
-                <button type="button" onclick="checkAnswer(2, 1)">Submit</button>
-            </div>
-        </div>
-
-        <div class="question" id="q3">
-            <p><strong>Question 4:</strong> Which feature is essential in the SE App?</p>
-
-            <label><input type="radio" name="q3" value="0"> Dark mode</label><br>
-
-            <label><input type="radio" name="q3" value="1"> Trip handling</label><br>
-
-            <label><input type="radio" name="q3" value="2"> Music player</label><br>
-
-            <label><input type="radio" name="q3" value="3"> Game center</label><br>
-
-            <div class="feedback" id="f3"></div>
-            <div class="navigation">
-                <button type="button" onclick="checkAnswer(3, 1)">Submit</button>
-            </div>
-        </div>
-
-        <div class="question" id="q4">
-            <p><strong>Question 5:</strong> What is checked during vehicle inspection?</p>
-
-            <label><input type="radio" name="q4" value="0"> Fuel level only</label><br>
-
-            <label><input type="radio" name="q4" value="1"> Interior cleanliness</label><br>
-
-            <label><input type="radio" name="q4" value="2"> Visual readiness and safety</label><br>
-
-            <label><input type="radio" name="q4" value="3"> License renewal</label><br>
-
-            <div class="feedback" id="f4"></div>
-            <div class="navigation">
-                <button type="button" onclick="checkAnswer(4, 2)">Submit</button>
-            </div>
-        </div>
-
-        <div id="completion" style="display:none;">
-            <p>All questions answered correctly. Proceed to the next test.</p>
-            <button onclick="goToNextTest()">Next Test</button>
-        </div>
-    </form>
-    <script>
-        let current = 0;
-        let correctAnswers = 0;
-        const totalQuestions = 5;
-
-        function showQuestion(index) {
-            document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
-            document.getElementById('q' + index).classList.add('active');
-        }
-
-        function checkAnswer(index, correctIndex) {
-            const selected = document.querySelector('input[name="q' + index + '"]:checked');
-            const feedback = document.getElementById('f' + index);
-            if (!selected) {
-                alert("Please select an answer.");
-                return;
-            }
-            if (parseInt(selected.value) === correctIndex) {
-                feedback.textContent = "Correct!";
-                correctAnswers++;
-                if (index + 1 < totalQuestions) {
-                    showQuestion(index + 1);
-                } else if (correctAnswers === totalQuestions) {
-                    document.getElementById('quizForm').style.display = 'none';
-                    document.getElementById('completion').style.display = 'block';
-                }
+    function showQuestion(index) {
+      quizDiv.innerHTML = '';
+      const q = questions[index];
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.innerHTML = `<p>${q.question}</p>`;
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => {
+          if (i === q.answer) {
+            correctAnswers++;
+            current++;
+            if (current < questions.length) {
+              showQuestion(current);
             } else {
-                feedback.textContent = "Incorrect. Please try again.";
+              quizDiv.innerHTML = '<p>All questions answered correctly!</p>';
+              nextBtn.classList.remove('hidden');
             }
-        }
+          } else {
+            alert('Incorrect. Try again.');
+          }
+        };
+        div.appendChild(btn);
+      });
+      quizDiv.appendChild(div);
+    }
 
-        function goToNextTest() {
-            window.location.href = "test" + (3) + ".html";
-        }
-
-        showQuestion(current);
-    </script>
+    showQuestion(current);
+    nextBtn.onclick = () => {
+      window.location.href = 'test3.html';
+    };
+  </script>
 </body>
 </html>

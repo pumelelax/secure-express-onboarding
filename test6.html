@@ -1,143 +1,60 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Test 6</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-        .question { display: none; }
-        .question.active { display: block; }
-        .feedback { color: green; font-weight: bold; }
-        .error { color: red; font-weight: bold; }
-        button { margin-top: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Test 6</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f9f9f9; }
+    .question { margin-bottom: 20px; }
+    .hidden { display: none; }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-    <h2>Test 6</h2>
-    <div id="quiz-container">
+  <h2>Test 6</h2>
+  <div id="quiz"></div>
+  <button id="nextBtn" class="hidden">Next Test</button>
+  <script>
+    const questions = [{'question': 'What is the purpose of commentary driving?', 'options': ['To narrate your actions', 'To entertain passengers', 'To confuse other drivers'], 'answer': 0}, {'question': 'When should you check your mirrors?', 'options': ['Every 5 seconds', 'Only when turning', 'Never'], 'answer': 0}, {'question': 'What does SIPDE stand for?', 'options': ['Scan, Identify, Predict, Decide, Execute', 'Stop, Inspect, Proceed, Drive, Exit', 'None of the above'], 'answer': 0}, {'question': 'What tone should you use with clients?', 'options': ['Friendly and professional', 'Sarcastic', 'Indifferent'], 'answer': 0}, {'question': 'What is the first step in vehicle inspection?', 'options': ['Visual check', 'Start engine', 'Drive off'], 'answer': 0}];
+    let current = 0;
+    let correctAnswers = 0;
+    const quizDiv = document.getElementById('quiz');
+    const nextBtn = document.getElementById('nextBtn');
 
-        <div class="question" id="q0">
-            <p><strong>Question 1:</strong> What is the first step to log into Expensify?</p>
-
-            <label><input type="radio" name="q0" value="Enter your name"> Enter your name</label><br>
-
-            <label><input type="radio" name="q0" value="Enter your Secure Express email"> Enter your Secure Express email</label><br>
-
-            <label><input type="radio" name="q0" value="Enter your password"> Enter your password</label><br>
-
-            <label><input type="radio" name="q0" value="Click on 'Submit Report'"> Click on 'Submit Report'</label><br>
-
-            <div id="feedback0" class="feedback"></div>
-            <div id="error0" class="error"></div>
-            <button onclick="checkAnswer(0, 'Enter your Secure Express email')">Submit</button>
-        </div>
-
-        <div class="question" id="q1">
-            <p><strong>Question 2:</strong> What must be included in the expense description?</p>
-
-            <label><input type="radio" name="q1" value="Your favorite color"> Your favorite color</label><br>
-
-            <label><input type="radio" name="q1" value="The vehicle number and month"> The vehicle number and month</label><br>
-
-            <label><input type="radio" name="q1" value="The client's name"> The client's name</label><br>
-
-            <label><input type="radio" name="q1" value="The weather"> The weather</label><br>
-
-            <div id="feedback1" class="feedback"></div>
-            <div id="error1" class="error"></div>
-            <button onclick="checkAnswer(1, 'The vehicle number and month')">Submit</button>
-        </div>
-
-        <div class="question" id="q2">
-            <p><strong>Question 3:</strong> How should receipts be submitted?</p>
-
-            <label><input type="radio" name="q2" value="By fax"> By fax</label><br>
-
-            <label><input type="radio" name="q2" value="By uploading to WhatsApp"> By uploading to WhatsApp</label><br>
-
-            <label><input type="radio" name="q2" value="By attaching to the expense report"> By attaching to the expense report</label><br>
-
-            <label><input type="radio" name="q2" value="By mailing them"> By mailing them</label><br>
-
-            <div id="feedback2" class="feedback"></div>
-            <div id="error2" class="error"></div>
-            <button onclick="checkAnswer(2, 'By attaching to the expense report')">Submit</button>
-        </div>
-
-        <div class="question" id="q3">
-            <p><strong>Question 4:</strong> What happens if the vehicle number is incorrect?</p>
-
-            <label><input type="radio" name="q3" value="Nothing"> Nothing</label><br>
-
-            <label><input type="radio" name="q3" value="The report is rejected"> The report is rejected</label><br>
-
-            <label><input type="radio" name="q3" value="You get a bonus"> You get a bonus</label><br>
-
-            <label><input type="radio" name="q3" value="It is ignored"> It is ignored</label><br>
-
-            <div id="feedback3" class="feedback"></div>
-            <div id="error3" class="error"></div>
-            <button onclick="checkAnswer(3, 'The report is rejected')">Submit</button>
-        </div>
-
-        <div class="question" id="q4">
-            <p><strong>Question 5:</strong> When should you submit your expense report?</p>
-
-            <label><input type="radio" name="q4" value="At the end of the month"> At the end of the month</label><br>
-
-            <label><input type="radio" name="q4" value="Whenever you want"> Whenever you want</label><br>
-
-            <label><input type="radio" name="q4" value="After every trip"> After every trip</label><br>
-
-            <label><input type="radio" name="q4" value="Before the trip"> Before the trip</label><br>
-
-            <div id="feedback4" class="feedback"></div>
-            <div id="error4" class="error"></div>
-            <button onclick="checkAnswer(4, 'At the end of the month')">Submit</button>
-        </div>
-
-    </div>
-    <div id="next-section" style="display:none;">
-        <p>All questions answered correctly!</p>
-        <button onclick="goToNextTest()">Next Test</button>
-    </div>
-    <script>
-        let currentQuestion = 0;
-        const totalQuestions = 5;
-        document.getElementById('q0').classList.add('active');
-
-        function checkAnswer(index, correctAnswer) {
-            const radios = document.getElementsByName('q' + index);
-            let selected = '';
-            for (const radio of radios) {
-                if (radio.checked) {
-                    selected = radio.value;
-                }
-            }
-            const feedback = document.getElementById('feedback' + index);
-            const error = document.getElementById('error' + index);
-            if (selected === '') {
-                error.textContent = 'Please select an answer.';
-                return;
-            }
-            if (selected === correctAnswer) {
-                feedback.textContent = 'Correct!';
-                error.textContent = '';
-                document.getElementById('q' + index).classList.remove('active');
-                if (index + 1 < totalQuestions) {
-                    document.getElementById('q' + (index + 1)).classList.add('active');
-                } else {
-                    document.getElementById('next-section').style.display = 'block';
-                }
+    function showQuestion(index) {
+      quizDiv.innerHTML = '';
+      const q = questions[index];
+      const div = document.createElement('div');
+      div.className = 'question';
+      div.innerHTML = `<p>${q.question}</p>`;
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => {
+          if (i === q.answer) {
+            correctAnswers++;
+            current++;
+            if (current < questions.length) {
+              showQuestion(current);
             } else {
-                error.textContent = 'Incorrect. Please try again.';
-                feedback.textContent = '';
+              quizDiv.innerHTML = '<p>All questions answered correctly!</p>';
+              nextBtn.classList.remove('hidden');
             }
-        }
+          } else {
+            alert('Incorrect. Try again.');
+          }
+        };
+        div.appendChild(btn);
+      });
+      quizDiv.appendChild(div);
+    }
 
-        function goToNextTest() {
-            window.location.href = "test7.html";
-        }
-    </script>
+    showQuestion(current);
+    nextBtn.onclick = () => {
+      window.location.href = 'test7.html';
+    };
+  </script>
 </body>
 </html>

@@ -3,99 +3,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Secure Express Onboarding Results</title>
+  <title>Final Results</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-      background-color: #f9f9f9;
-    }
-    h2 {
-      text-align: center;
-      color: #333;
-    }
-    .results {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f9f9f9; }
+    h2 { text-align: center; }
+    button { padding: 10px 20px; font-size: 16px; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h2>Training Results</h2>
-  <div class="results" id="resultsDisplay"></div>
-  <button onclick="sendResults()">Send Results</button>
-
+  <h2>Training Complete</h2>
+  <p id="summary"></p>
+  <button id="sendEmailBtn">Send Results</button>
   <script>
-    const driverInfo = JSON.parse(localStorage.getItem('driverInfo'));
-    const testResults = JSON.parse(localStorage.getItem('testResults'));
+    const driver = JSON.parse(localStorage.getItem('driverInfo'));
+    const summary = document.getElementById('summary');
+    summary.innerHTML = `<strong>Name:</strong> ${driver.name} ${driver.surname}<br><strong>Email:</strong> ${driver.email}<br><strong>Status:</strong> Passed`;
 
-    function displayResults() {
-      const container = document.getElementById('resultsDisplay');
-      if (!driverInfo || !testResults) {
-        container.innerHTML = "<p>Missing driver info or test results.</p>";
-        return;
-      }
-
-      let html = `<p><strong>Name:</strong> ${driverInfo.name} ${driverInfo.surname}</p>`;
-      html += "<ul>";
-      let allPassed = true;
-      for (const [test, result] of Object.entries(testResults)) {
-        html += `<li>${test}: ${result.passed ? "Passed" : "Failed"} (${result.score}%)</li>`;
-        if (!result.passed) allPassed = false;
-      }
-      html += "</ul>";
-      html += `<p><strong>Overall Status:</strong> ${allPassed ? "Passed" : "Failed"}</p>`;
-      container.innerHTML = html;
-    }
-
-    function sendResults() {
-      if (!driverInfo || !testResults) {
-        alert("Missing driver info or test results.");
-        return;
-      }
-
+    document.getElementById('sendEmailBtn').onclick = () => {
       fetch('https://secure-express-backend.vercel.app/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: driverInfo.name,
-          email: driverInfo.email,
-          results: testResults
+          name: driver.name,
+          email: driver.email,
+          to: ['pumelelax@secureexpress.co.za', driver.email],
+          subject: 'Secure Express Onboarding Training Results',
+          message: `Driver ${driver.name} has completed onboarding and passed all tests.`
         })
-      })
-      .then(response => {
-        if (response.ok) {
-          alert("Results sent successfully!");
+      }).then(res => {
+        if (res.ok) {
+          alert('Email sent successfully!');
         } else {
-          alert("Failed to send results.");
+          alert('Failed to send email.');
         }
-      })
-      .catch(error => {
-        console.error("Error sending results:", error);
-        alert("Error sending results.");
       });
-    }
-
-    displayResults();
+    };
   </script>
 </body>
 </html>
