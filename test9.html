@@ -1,8 +1,74 @@
+
 <!DOCTYPE html>
-<html>
-<head><title>Results</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure Express Onboarding Results</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f9f9f9; }
+    h2 { text-align: center; color: #333; }
+    .results { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .result-item { margin-bottom: 10px; }
+    button { padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; }
+    button:hover { background-color: #0056b3; }
+  </style>
+</head>
 <body>
-<h1>Training Complete</h1>
-<p>Results summary and email logic goes here.</p>
+  <h2>Training Complete</h2>
+  <div class="results" id="resultsContainer">
+    <!-- Results will be displayed here -->
+  </div>
+  <button onclick="sendResults()">Send Results</button>
+
+  <script>
+    const driverInfo = JSON.parse(localStorage.getItem('driverInfo'));
+    const testResults = JSON.parse(localStorage.getItem('testResults'));
+
+    const container = document.getElementById('resultsContainer');
+    let allPassed = true;
+    let resultSummary = '';
+
+    for (let i = 1; i <= 8; i++) {
+      const result = testResults && testResults['test' + i];
+      const passed = result && result.passed;
+      const score = result ? result.score : 0;
+      const status = passed ? '✅ Passed' : '❌ Failed';
+      if (!passed) allPassed = false;
+      resultSummary += `Test ${i}: ${status} (Score: ${score})\n`;
+      const div = document.createElement('div');
+      div.className = 'result-item';
+      div.textContent = `Test ${i}: ${status} (Score: ${score})`;
+      container.appendChild(div);
+    }
+
+    function sendResults() {
+      if (!allPassed) {
+        alert("You must pass all tests before sending results.");
+        return;
+      }
+
+      fetch('https://your-backend-endpoint/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: driverInfo.name,
+          email: driverInfo.email,
+          summary: resultSummary
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          alert("Results sent successfully!");
+        } else {
+          alert("Failed to send results.");
+        }
+      })
+      .catch(error => {
+        console.error("Error sending email:", error);
+        alert("Error sending email.");
+      });
+    }
+  </script>
 </body>
 </html>
