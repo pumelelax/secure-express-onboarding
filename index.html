@@ -1,14 +1,72 @@
 <!DOCTYPE html>
-<html>
-<head><title>Driver Info</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure Express Onboarding</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      background-color: #f9f9f9;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
 <body>
-<h1>Secure Express Onboarding</h1>
-<form action="test1.html">
-  Name: <input type="text" name="name" required><br>
-  Surname: <input type="text" name="surname" required><br>
-  Position: <input type="text" name="position" required><br>
-  Work Email: <input type="email" name="email" required><br>
-  <input type="submit" value="Start Training">
-</form>
+  <h2>Secure Express Driver Onboarding</h2>
+  <form id="driverForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="text" id="surname" placeholder="Surname" required>
+    <input type="text" id="position" placeholder="Position" required>
+    <input type="email" id="email" placeholder="Work Email" required>
+    <button type="submit">Start Training</button>
+  </form>
+
+  <script>
+    document.getElementById('driverForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const surname = document.getElementById('surname').value.trim();
+      const position = document.getElementById('position').value.trim();
+      const email = document.getElementById('email').value.trim();
+
+      if (!name || !surname || !position || !email || !email.includes('@')) {
+        alert('Please fill in all fields correctly.');
+        return;
+      }
+
+      localStorage.setItem('driverInfo', JSON.stringify({ name, surname, position, email }));
+      window.location.href = 'test1.html';
+    });
+  </script>
 </body>
 </html>
